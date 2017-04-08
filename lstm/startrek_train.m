@@ -117,13 +117,7 @@ for epoch = last_epoch:epochs
 
 
             % Optimize
-            % First, clip gradients to [-5,5]
-            for i = 1:length(dW)
-                dW{i} = max(-5,min(5,dW{i}));
-            end
-
-            % Apply optimization
-            W = opt.optimize(W, dW);
+            W = opt.optimize(W, clip_gradients(dW, 5));
 
             % Reset
             for i = 1:length(dW)

@@ -19,15 +19,11 @@ classdef NesterovOptimizer < handle
         function w = optimize(self, w, g)
             
             for i = 1:length(w)
-                % clip gradients
-                g{i} = max(-5,min(5,g{i}));
-                
                 % nesterov momentum
                 self.v{i} = self.momentum^2 * self.v{i} - (1+self.momentum) * self.rate * g{i};
                 w{i} = w{i} + self.v{i};
             end
         end
     end
-    
 end
 
