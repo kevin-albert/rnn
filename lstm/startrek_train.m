@@ -34,15 +34,6 @@ for epoch = last_epoch:epochs
     % Accumulate average error for this epoch
     err = 0;
     
-    sample_file = 0;
-    sample_start = 0;
-    sample_end = 0;
-    if mod(epoch, step) == 0
-        sample_file = randi(length(files));
-        sample_start = randi(max(1, length(files{sample_file}) - 4*seq_length));
-        sample_end = sample_start + 50;
-    end
-    
     % Reset state
     S{1,1} = lstm_state(num_cells);
     S{2,1} = lstm_state(num_cells);
@@ -51,6 +42,13 @@ for epoch = last_epoch:epochs
     for idx = last_file:length(files)
         file = files{P(idx)};
         fprintf('reading file %d\n', idx);
+        
+        sample_start = 0;
+        sample_end = 0;
+        if mod(epoch, step) == 0 && idx == 1
+            sample_start = randi(max(1, length(file) - 4*seq_length));
+            sample_end = sample_start + 2*seq_length;
+        end
 
         offset = 1;
         while offset < length(file)
@@ -112,7 +110,7 @@ for epoch = last_epoch:epochs
             end
 
             % Print out some sample text
-            if idx == sample_file && offset > sample_start && offset < sample_end
+            if offset > sample_start && offset < sample_end
                fprintf(' %5d | %s\n', epoch, mapper.from_onehot_seq(Y)); 
             end
 
