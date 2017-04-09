@@ -9,7 +9,7 @@ seq_length = 40;
 epochs = 10000;
 step = 1;
 
-load LSTM.mat W opt last_epoch E
+load LSTM.mat W opt last_epoch E last_file P
 
 dW = cell(W);
 for i = 1:length(dW)
@@ -48,8 +48,9 @@ for epoch = last_epoch:epochs
     S{2,1} = lstm_state(num_cells);
     S{3,1} = lstm_state(num_cells);
 
-    for idx = randperm(length(files))
-        file = files{idx};
+    for idx = last_file:length(files)
+        file = files{P(idx)};
+        fprintf('reading file %d\n', idx);
 
         offset = 1;
         while offset < length(file)
@@ -130,7 +131,8 @@ for epoch = last_epoch:epochs
             S{3,1} = S{3,n+1};
         end
         
-        save LSTM.mat W opt last_epoch E
+        last_file = idx + 1;
+        save LSTM.mat W opt last_epoch E last_file P
     end
     
     % Average error
@@ -141,5 +143,8 @@ for epoch = last_epoch:epochs
     plot(E(1:epoch));
     drawnow
     
-    save LSTM.mat W opt last_epoch E
+    last_file = 1;
+    P = randperm(1:length(files));
+    
+    save LSTM.mat W opt last_epoch E last_file P
 end
