@@ -1,5 +1,11 @@
 load LSTM.mat W
 
+% Load training data so we know which input / output classes to use
+[ files, bytes ] = read_file('startrek_data.txt');
+mapper = TextMapper(files);
+
+% XXX save this variable...
+num_cells = 200;
 steps = 200;
 
 c = '^';
@@ -9,6 +15,7 @@ S = {
     lstm_state(num_cells),...
     lstm_state(num_cells)
 };
+[ Wh1, bh1, Wh2, bh2, Wh3, bh3, Wy, by ] = W{:};
 for i = 1:steps
     x = mapper.to_onehot(c);
     
@@ -22,6 +29,7 @@ for i = 1:steps
     h3 = lstm_output(S{3});
 
     y = tanh(W{7} * h3 + W{8});
-    c = mapper.from_onehot(y);
+    p = (y+1) / sum(y+1);
+    c = mapper.from_dist(p);
     fprintf('%s', c);
 end

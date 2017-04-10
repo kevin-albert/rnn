@@ -2,14 +2,14 @@
 mapper = TextMapper(files);
 
 num_input = mapper.domain;
-num_cells = 200;
 num_output = mapper.domain;
 
 seq_length = 40;
 epochs = 10000;
 step = 1;
+% soft_temp = 0.5;
 
-load LSTM.mat W opt last_epoch E last_file P
+load LSTM.mat num_cells W opt last_epoch E last_file P
 
 dW = cell(W);
 for i = 1:length(dW)
@@ -69,7 +69,8 @@ for epoch = last_epoch:epochs
                 S{3,i+1} = lstm_forwardpass(Wh3, bh3, S{3,i}, [x; h2]);
                 h3 = lstm_output(S{3,i+1});
 
-                y = tanh(W{7} * h3 + W{8});
+%                 y = softmax(soft_temp, Wy * h3 + by);
+                y = tanh(Wy * h3 + by);
 
                 err = err + sum((y-y_).^2);
                 Y{i} = y;
@@ -130,7 +131,7 @@ for epoch = last_epoch:epochs
         end
         
         last_file = idx + 1;
-        save LSTM.mat W opt last_epoch E last_file P
+        save LSTM.mat num_cells W opt last_epoch E last_file P
     end
     
     % Average error
@@ -144,5 +145,5 @@ for epoch = last_epoch:epochs
     last_file = 1;
     P = randperm(1:length(files));
     
-    save LSTM.mat W opt last_epoch E last_file P
+    save LSTM.mat num_cells W opt last_epoch E last_file P
 end

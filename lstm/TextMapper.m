@@ -38,6 +38,18 @@ classdef TextMapper
                str(i) = self.from_onehot(seq{i});
             end
         end
+        
+        function char = from_dist(self, prob)
+            x = rand;
+            s = 0;
+            for i = 1:length(prob)
+                s = s + prob(i);
+                if s > x || i == length(prob)
+                    char = native2unicode(self.decode(i));
+                    return;
+                end
+            end
+        end
     end
     
 end

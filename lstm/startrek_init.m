@@ -28,4 +28,4 @@ E = zeros(10000, 1);
 P = randperm(length(files));
 last_file = 0;
 
-save LSTM.mat W opt last_epoch E last_file P
+save LSTM.mat num_cells W opt last_epoch E last_file P
